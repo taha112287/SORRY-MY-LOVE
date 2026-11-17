@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I’m sorry 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  --bg:#fff1f3; --bg2:#ffd9e0; --ink:#4a1f33; --soft:#8a5568; --accent:#d6336c; --accent-ink:#fff; --card:#ffffffcc;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#1d1020;--bg2:#3a1633;--ink:#ffe8ee;--soft:#d9a9ba;--accent:#ff6f9c;--accent-ink:#2a0d1a;--card:#2b1530cc;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#1d1020;--bg2:#3a1633;--ink:#ffe8ee;--soft:#d9a9ba;--accent:#ff6f9c;--accent-ink:#2a0d1a;--card:#2b1530cc;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;height:100%;background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg));color:var(--ink);font-family:"Nunito",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden}
+main{width:min(92vw,30rem);text-align:center;padding:1rem}
+.card{background:var(--card);backdrop-filter:blur(6px);border-radius:1.5rem;padding:2rem 1.5rem;min-height:18rem;display:flex;flex-direction:column;justify-content:center;gap:1.25rem;box-shadow:0 10px 40px #d6336c22}
+h1{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:600;font-size:clamp(2.2rem,9vw,3.2rem);line-height:1.1;margin:0}
+p{font-size:1.2rem;line-height:1.55;margin:0;color:var(--soft)}
+p.msg{color:var(--ink);font-size:1.3rem}
+button,input{font:inherit}
+button{border:0;border-radius:999px;padding:.85rem 1.6rem;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink);transition:transform .15s}
+button:active{transform:scale(.96)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+button.ghost{background:transparent;color:var(--soft);border:2px solid var(--soft)}
+input{padding:.8rem 1rem;border-radius:999px;border:2px solid var(--soft);background:transparent;color:var(--ink);text-align:center;width:100%}
+.row{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;min-height:3.2rem}
+.dots{display:flex;gap:.4rem;justify-content:center;margin-top:1rem}
+.dots i{width:.5rem;height:.5rem;border-radius:50%;background:var(--soft);opacity:.35}
+.dots i.on{opacity:1;background:var(--accent)}
+.fade{animation:f .5s ease}
+@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.heart{position:fixed;top:-2rem;pointer-events:none;animation:fall linear forwards;z-index:5}
+@keyframes fall{to{transform:translateY(110vh) rotate(40deg);opacity:.9}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.heart{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="card" id="card" aria-live="polite"></div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
+</main>
+<script>
+(function(){
+  var card=document.getElementById('card'),dots=document.getElementById('dots');
+  var name='';var i=0;
+  function msgs(){
+    var n=name?name:'love';
+    return [
+      {h:'Hey '+n+' 💌',t:'I made this for you, because I owe you a real apology.'},
+      {t:'I’m sorry I hurt you. It wasn’t what I wanted, but it still counts, and I own it.'},
+      {t:'You matter to me far more than being right ever will.'},
+      {t:'I’m listening, and I want to do better. Not just say it, but show it.'},
+      {t:'Whenever you’re ready to talk, I’ll be right here.'}
+    ];
+  }
+  function setDots(n){dots.innerHTML='';for(var k=0;k<n;k++){var d=document.createElement('i');if(k<=i)d.className='on';dots.appendChild(d)}}
+  function start(){
+    card.innerHTML='<h1 class="fade">I owe you something.</h1><p>First, what should I call you?</p><input id="nm" placeholder="Her name (optional)" autocomplete="off" aria-label="Name"><div class="row"><button id="go">Open</button></div>';
+    dots.innerHTML='';
+    var nm=document.getElementById('nm');
+    function go(){name=nm.value.trim();i=0;show()}
+    document.getElementById('go').onclick=go;
+    nm.onkeydown=function(e){if(e.key==='Enter')go()};
+  }
+  function show(){
+    var m=msgs();
+    if(i>=m.length){return ask()}
+    var x=m[i];
+    card.innerHTML=(x.h?'<h1 class="fade">'+esc(x.h)+'</h1>':'')+'<p class="'+(x.h?'':'msg ')+'fade">'+esc(x.t)+'</p><div class="row"><button id="nx">'+(i===m.length-1?'One more thing':'Next')+'</button></div>';
+    setDots(m.length);
+    document.getElementById('nx').onclick=function(){i++;show()};
+  }
+  function ask(){
+    dots.innerHTML='';
+    card.innerHTML='<h1 class="fade">Can you forgive me?</h1><p>Take your time. I mean it.</p><div class="row" id="r" style="position:relative"><button id="yes">Yes</button><button class="ghost" id="no">Not yet</button></div>';
+    var no=document.getElementById('no'),yes=document.getElementById('yes'),c=0;
+    var lines=['Not yet','Really?','Please?','Pretty please?','I’ll bring snacks'];
+    no.onclick=function(){c++;no.textContent=lines[Math.min(c,lines.length-1)];yes.style.transform='scale('+Math.min(1+c*.15,1.7)+')'};
+    yes.onclick=happy;
+  }
+  function happy(){
+    card.innerHTML='<h1 class="fade">Thank you 🥹</h1><p class="msg fade">I promise I’ll make it up to you. Dinner, my treat, tonight?</p><div class="row"><button id="again" class="ghost">Replay</button></div>';
+    document.getElementById('again').onclick=start;
+    for(var k=0;k<40;k++){(function(k){setTimeout(function(){
+      var h=document.createElement('div');h.className='heart';h.textContent=['💖','💗','💕','🌹'][k%4];
+      h.style.left=Math.random()*100+'vw';h.style.fontSize=(1+Math.random()*1.6)+'rem';h.style.animationDuration=(3+Math.random()*3)+'s';
+      document.body.appendChild(h);setTimeout(function(){h.remove()},6500);
+    },k*90)})(k)}
+  }
+  function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  start();
+})();
+</script>
+</body>
+</html>
